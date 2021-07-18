@@ -1,6 +1,7 @@
 import {
   AxesHelper,
   BoxGeometry,
+  Group,
   Mesh,
   MeshBasicMaterial,
   PerspectiveCamera,
@@ -23,20 +24,44 @@ const size = {
 // Scene
 const scene = new Scene();
 
-// Red Box
 const geometry = new BoxGeometry(1, 1, 1);
-const material = new MeshBasicMaterial({
-  color: 0xff0000
-});
-const mesh = new Mesh(geometry, material);
-mesh.position.set(0.7, -0.6, 1);
-mesh.scale.setX(2);
 
-// Rotation
-mesh.rotation.set(Math.PI / 4, Math.PI / 4, 0, 'YXZ');
+// Red Box
+const mesh1 = new Mesh(
+  geometry,
+  new MeshBasicMaterial({
+    color: 0xff0000
+  })
+);
+mesh1.position.set(0, 0, 0);
+
+// Blue Box
+const mesh2 = new Mesh(
+  geometry,
+  new MeshBasicMaterial({
+    color: 0x00ff00
+  })
+);
+mesh2.position.set(-2, 0, 0);
+
+// Green Box
+const mesh3 = new Mesh(
+  geometry,
+  new MeshBasicMaterial({
+    color: 0x0000ff
+  })
+);
+mesh3.position.set(2, 0, 0);
+
+// Group
+const group = new Group();
+group.add(mesh1, mesh2, mesh3);
+
+// Rotation of Group
+group.rotation.set(Math.PI / 3, 0, Math.PI / 4);
 
 // Adding object to scene
-scene.add(mesh);
+scene.add(group);
 
 // Camera
 const camera = new PerspectiveCamera(75, size.width / size.height);
