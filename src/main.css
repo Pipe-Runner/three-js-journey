@@ -1,0 +1,9 @@
+html, body {
+  padding: 0px;
+  margin: 0px;
+}
+
+canvas {
+  /* TODO canvas has a bottom margin caused due to line height of inline-elements */
+  display: block;
+}
