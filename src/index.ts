@@ -43,6 +43,32 @@ const renderer = new WebGLRenderer({
   canvas
 });
 renderer.setSize(dimension.width, dimension.height);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+
+window.addEventListener('resize', function(){
+  console.log('resize');
+
+  dimension.height = window.innerHeight;
+  dimension.width = window.innerWidth;
+
+  // update camera aspect ratio based on new dimensions
+  camera.aspect = dimension.width / dimension.height
+
+  // this statement is needed for ThreeJS to know that the project matrix needs to be updated
+  camera.updateProjectionMatrix();
+
+  renderer.setSize(dimension.width, dimension.height);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+})
+
+window.addEventListener('dblclick', function(){
+  if(!document.fullscreenElement){
+    canvas.requestFullscreen();
+  }
+  else{
+    document.exitFullscreen();
+  }
+})
 
 
 // Adding built-in controls
@@ -50,8 +76,6 @@ const control = new OrbitControls(camera, canvas);
 control.target.x = mesh.position.x;
 control.target.y = mesh.position.y;
 control.target.z = mesh.position.z;
-control.enableDamping = true;
-control.dampingFactor = 0.008;
 
 // initial render
 control.update();
