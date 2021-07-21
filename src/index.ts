@@ -21,14 +21,20 @@ const dimension = {
   width: window.innerWidth
 };
 
-// const geometry = new BoxGeometry(1, 1, 1, 2, 2, 2);
+const NUM_TRIANGLES = 50;
+// Each triangle is made up of 3 vertices and each vertex is made up of 3 numbers
+// Alternate way of array initialization
+const positionArray = new Float32Array(NUM_TRIANGLES * 3 * 3);
+
+for (let i = 0; i < NUM_TRIANGLES * 3 * 3; i++) {
+  positionArray[i] = (Math.random() - 0.5) * 4;
+}
+
+const positionAttribute = new BufferAttribute(positionArray, 3);
 
 const geometry = new BufferGeometry();
 // Item size is three as there are 3 co-ordinates per vertex
-geometry.setAttribute(
-  'position',
-  new BufferAttribute(new Float32Array([0, 0, 0, 3, 3, 3, 3, -3, 3]), 3)
-);
+geometry.setAttribute('position', positionAttribute);
 
 const mesh = new Mesh(
   geometry,
