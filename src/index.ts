@@ -5,7 +5,9 @@ import {
   AxesHelper,
   PerspectiveCamera,
   Scene,
-  WebGLRenderer
+  WebGLRenderer,
+  BufferGeometry,
+  BufferAttribute
 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import './main.css';
@@ -19,10 +21,20 @@ const dimension = {
   width: window.innerWidth
 };
 
+// const geometry = new BoxGeometry(1, 1, 1, 2, 2, 2);
+
+const geometry = new BufferGeometry();
+// Item size is three as there are 3 co-ordinates per vertex
+geometry.setAttribute(
+  'position',
+  new BufferAttribute(new Float32Array([0, 0, 0, 3, 3, 3, 3, -3, 3]), 3)
+);
+
 const mesh = new Mesh(
-  new BoxGeometry(1, 1, 1),
+  geometry,
   new MeshBasicMaterial({
-    color: 0xff0000
+    color: 0xff0000,
+    wireframe: true
   })
 );
 
@@ -43,33 +55,31 @@ const renderer = new WebGLRenderer({
   canvas
 });
 renderer.setSize(dimension.width, dimension.height);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-window.addEventListener('resize', function(){
+window.addEventListener('resize', function () {
   console.log('resize');
 
   dimension.height = window.innerHeight;
   dimension.width = window.innerWidth;
 
   // update camera aspect ratio based on new dimensions
-  camera.aspect = dimension.width / dimension.height
+  camera.aspect = dimension.width / dimension.height;
 
   // this statement is needed for ThreeJS to know that the project matrix needs to be updated
   camera.updateProjectionMatrix();
 
   renderer.setSize(dimension.width, dimension.height);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
-})
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+});
 
-window.addEventListener('dblclick', function(){
-  if(!document.fullscreenElement){
+window.addEventListener('dblclick', function () {
+  if (!document.fullscreenElement) {
     canvas.requestFullscreen();
-  }
-  else{
+  } else {
     document.exitFullscreen();
   }
-})
-
+});
 
 // Adding built-in controls
 const control = new OrbitControls(camera, canvas);
