@@ -5,12 +5,17 @@ import {
   AxesHelper,
   PerspectiveCamera,
   Scene,
-  WebGLRenderer,
-  BufferGeometry,
-  BufferAttribute
+  WebGLRenderer
 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { GUI } from 'dat.gui';
+import gsap from 'gsap';
 import './main.css';
+
+/**
+ * Debug
+ */
+const gui = new GUI();
 
 const canvas = document.createElement('canvas');
 canvas.setAttribute('id', 'three-js-stage');
@@ -21,28 +26,42 @@ const dimension = {
   width: window.innerWidth
 };
 
-const NUM_TRIANGLES = 50;
-// Each triangle is made up of 3 vertices and each vertex is made up of 3 numbers
-// Alternate way of array initialization
-const positionArray = new Float32Array(NUM_TRIANGLES * 3 * 3);
-
-for (let i = 0; i < NUM_TRIANGLES * 3 * 3; i++) {
-  positionArray[i] = (Math.random() - 0.5) * 4;
-}
-
-const positionAttribute = new BufferAttribute(positionArray, 3);
-
-const geometry = new BufferGeometry();
-// Item size is three as there are 3 co-ordinates per vertex
-geometry.setAttribute('position', positionAttribute);
+const meshParams = {
+  color: 0xff0000
+};
 
 const mesh = new Mesh(
-  geometry,
+  new BoxGeometry(1, 1, 1),
   new MeshBasicMaterial({
-    color: 0xff0000,
-    wireframe: true
+    color: meshParams.color,
+    wireframe: false
   })
 );
+
+const animationParams = {
+  spin: () => {
+    gsap.to(mesh.rotation, { duration: 1, y: mesh.rotation.y + 10 });
+  }
+};
+
+// Normal way of adding
+gui.add(mesh.position, 'x', -3, 3, 0.01);
+gui.add(mesh.position, 'y', -3, 3, 0.01);
+gui.add(mesh.position, 'z', -3, 3, 0.01);
+
+// piped way of adding with custom label
+gui.add(mesh, 'visible').name('Is Cube Visible?');
+
+gui.add(mesh.material, 'wireframe');
+
+gui
+  .addColor(meshParams, 'color')
+  .name('cube mesh color')
+  .onChange(() => {
+    mesh.material.color.setHex(meshParams.color);
+  });
+
+gui.add(animationParams, 'spin');
 
 const camera = new PerspectiveCamera(75, dimension.width / dimension.height);
 camera.lookAt(mesh.position);
