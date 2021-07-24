@@ -8,7 +8,10 @@ import {
   WebGLRenderer,
   Texture,
   TextureLoader,
-  LoadingManager
+  LoadingManager,
+  RepeatWrapping,
+  MirroredRepeatWrapping,
+  NearestFilter
 } from 'three';
 import './main.css';
 
@@ -25,13 +28,23 @@ const loadingManager = new LoadingManager(
 );
 
 const textureLoader = new TextureLoader(loadingManager);
-const colorTexture = textureLoader.load('/textures/door/color.jpg');
+const colorTexture = textureLoader.load('/textures/checkerboard-1024x1024.png');
 const alphaTexture = textureLoader.load('/textures/door/alpha.jpg');
 const heightTexture = textureLoader.load('/textures/door/height.jpg');
 const normalTexture = textureLoader.load('/textures/door/normal.jpg');
 const metalnessTexture = textureLoader.load('/textures/door/metalness.jpg');
 const roughnessTexture = textureLoader.load('/textures/door/roughness.jpg');
 const ambientOcclusionTexture = textureLoader.load('/textures/door/ambientOcclusion.jpg');
+
+// Texture transformation
+colorTexture.repeat.x = 2;
+colorTexture.repeat.y = 3;
+colorTexture.wrapS = MirroredRepeatWrapping;
+colorTexture.wrapT = RepeatWrapping;
+colorTexture.offset.x = 0.5;
+colorTexture.rotation = 1;
+
+colorTexture.minFilter = NearestFilter;
 
 const canvas = document.createElement('canvas');
 canvas.setAttribute('id', 'three-js-stage');
@@ -49,6 +62,8 @@ const mesh = new Mesh(
     map: colorTexture
   })
 );
+
+console.log(mesh.geometry.attributes.uv);
 
 const camera = new PerspectiveCamera(75, dimension.width / dimension.height);
 camera.position.set(1.5, 1.5, 1.5);
