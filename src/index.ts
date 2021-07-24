@@ -6,19 +6,32 @@ import {
   PerspectiveCamera,
   Scene,
   WebGLRenderer,
-  Texture
+  Texture,
+  TextureLoader,
+  LoadingManager
 } from 'three';
 import './main.css';
 
-const image = new Image();
-const texture = new Texture(image);
+const loadingManager = new LoadingManager(
+  () => {
+    console.log('loading finished');
+  },
+  () => {
+    console.log('loading');
+  },
+  () => {
+    console.log('onError');
+  }
+);
 
-image.onload = () => {
-  // ask ThreeJS to force update the texture
-  texture.needsUpdate = true;
-};
-
-image.src = '/textures/door/color.jpg';
+const textureLoader = new TextureLoader(loadingManager);
+const colorTexture = textureLoader.load('/textures/door/color.jpg');
+const alphaTexture = textureLoader.load('/textures/door/alpha.jpg');
+const heightTexture = textureLoader.load('/textures/door/height.jpg');
+const normalTexture = textureLoader.load('/textures/door/normal.jpg');
+const metalnessTexture = textureLoader.load('/textures/door/metalness.jpg');
+const roughnessTexture = textureLoader.load('/textures/door/roughness.jpg');
+const ambientOcclusionTexture = textureLoader.load('/textures/door/ambientOcclusion.jpg');
 
 const canvas = document.createElement('canvas');
 canvas.setAttribute('id', 'three-js-stage');
@@ -33,13 +46,13 @@ const mesh = new Mesh(
   new BoxGeometry(1, 1, 1),
   new MeshBasicMaterial({
     // color: 0xff0000
-    map: texture
+    map: colorTexture
   })
 );
 
 const camera = new PerspectiveCamera(75, dimension.width / dimension.height);
 camera.position.set(1.5, 1.5, 1.5);
-camera.lookAt(mesh.position)
+camera.lookAt(mesh.position);
 
 const axesHelper = new AxesHelper(1000);
 
