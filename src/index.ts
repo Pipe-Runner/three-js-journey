@@ -24,7 +24,8 @@ import {
   NearestFilter,
   MeshStandardMaterial,
   BufferAttribute,
-  Vector2
+  Vector2,
+  CubeTextureLoader
 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GUI } from 'dat.gui';
@@ -42,7 +43,7 @@ const dimension = {
   width: window.innerWidth
 };
 
-const loadingManager = new LoadingManager(
+const textureLoadingManager = new LoadingManager(
   () => {
     console.log('Loaded texture...');
   },
@@ -54,7 +55,8 @@ const loadingManager = new LoadingManager(
   }
 );
 
-const textureLoader = new TextureLoader(loadingManager);
+const textureLoader = new TextureLoader(textureLoadingManager);
+const cubeTextureLoader = new CubeTextureLoader(textureLoadingManager);
 
 const doorColorTexture = textureLoader.load('/textures/door/color.jpg');
 const doorAlphaTexture = textureLoader.load('/textures/door/alpha.jpg');
@@ -69,6 +71,15 @@ const matcapTexture = textureLoader.load('/textures/matcaps/1.png');
 const gradientTexture = textureLoader.load('/textures/gradients/3.jpg');
 gradientTexture.magFilter = NearestFilter;
 gradientTexture.generateMipmaps = false;
+
+const environmentMapTexture = cubeTextureLoader.load([
+  '/textures/environmentMaps/0/px.jpg',
+  '/textures/environmentMaps/0/nx.jpg',
+  '/textures/environmentMaps/0/py.jpg',
+  '/textures/environmentMaps/0/ny.jpg',
+  '/textures/environmentMaps/0/pz.jpg',
+  '/textures/environmentMaps/0/nz.jpg',
+])
 
 const ambientLight = new AmbientLight(0xffffff, 0.5);
 const pointLight = new PointLight(0xffffff, 0.5);
@@ -107,19 +118,9 @@ pointLight.position.set(3, 3, 3);
 // });
 
 const material = new MeshStandardMaterial({
-  // metalness: 0.45,
-  // roughness: 0.65,
-  aoMap: doorAmbientOcclusionTexture,
-  map: doorColorTexture,
-  aoMapIntensity: 1,
-  displacementMap: doorHeightTexture,
-  displacementScale: 0.04,
-  metalnessMap: doorMetalnessTexture,
-  roughnessMap: doorRoughnessTexture,
-  normalMap: doorNormalTexture,
-  normalScale: new Vector2(0.3, 0.3),
-  alphaMap: doorAlphaTexture,
-  transparent: true
+  metalness: 0.7,
+  roughness: 0.2,
+  envMap: environmentMapTexture
 });
 
 gui.add(material, 'metalness').min(0).max(1).step(0.0001);
