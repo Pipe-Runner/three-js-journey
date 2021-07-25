@@ -1,5 +1,5 @@
 const path = require('path');
-// const CopyPlugin = require('copy-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
@@ -57,9 +57,9 @@ module.exports = {
     ]
   },
   plugins: [
-    // new CopyPlugin({
-    //   patterns: [{ from: './public/index.html' }, { from: './public/base.css' }]
-    // })
+    new CopyPlugin({
+      patterns: [{ from: './assets/' }]
+    }),
     new HtmlWebpackPlugin({
       title: 'Project Grimstroke #1',
       cache: true,
