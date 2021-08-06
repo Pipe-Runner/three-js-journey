@@ -57,9 +57,9 @@ module.exports = {
     ]
   },
   plugins: [
-    new CopyPlugin({
-      patterns: [{ from: './assets/' }]
-    }),
+    // new CopyPlugin({
+    //   patterns: [{ from: './assets/' }]
+    // }),
     new HtmlWebpackPlugin({
       title: 'Project Grimstroke #1',
       cache: true,
