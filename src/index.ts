@@ -47,15 +47,6 @@ world.gravity.set(0, -9.82, 0);
 /**
  * Bodies
  */
-const sphereShape = new Sphere(0.5);
-const sphereBody = new Body({
-  mass: 1,
-  position: new Vec3(0, 5, 0),
-  shape: sphereShape,
-  material: plasticMaterial
-});
-sphereBody.applyLocalForce(new Vec3(0, 0, -150), new Vec3(0, 0, 0));
-world.addBody(sphereBody);
 
 const planeShape = new Plane();
 const planeBody = new Body({
@@ -94,19 +85,6 @@ directionalLight.shadow.mapSize.width = 512;
 directionalLight.shadow.mapSize.height = 512;
 scene.add(directionalLight);
 // scene.add(new CameraHelper(directionalLight.shadow.camera));
-
-const sphere = new Mesh(
-  new SphereBufferGeometry(0.5, 32, 32),
-  new MeshStandardMaterial({
-    // wireframe: true,
-    color: 'pink',
-    metalness: 0.9,
-    roughness: 0.8
-  })
-);
-// sphere.position.setY(3);
-sphere.castShadow = true;
-scene.add(sphere);
 
 const plane = new Mesh(
   new PlaneBufferGeometry(8, 8),
@@ -156,6 +134,42 @@ directionLightFolder.add(directionalLight.position, 'x').min(0).max(100).step(0.
 directionLightFolder.add(directionalLight.position, 'y').min(0).max(100).step(0.5);
 directionLightFolder.add(directionalLight.position, 'z').min(0).max(100).step(0.5);
 
+/**
+ * Utils
+ */
+const updateObjectArray: { mesh: Mesh; object: Body }[] = [];
+
+const generateSphere = (radius: number, position: { x: number; y: number; z: number }): void => {
+  const sphereMesh = new Mesh(
+    new SphereBufferGeometry(radius, 34, 34),
+    new MeshStandardMaterial({
+      metalness: 0.4,
+      roughness: 0.3,
+      color: 'grey'
+    })
+  );
+
+  sphereMesh.castShadow = true;
+  sphereMesh.position.copy(position as unknown as Vector3);
+  scene.add(sphereMesh);
+
+  const sphereShape = new Sphere(radius);
+  const sphereBody = new Body({
+    mass: 1,
+    shape: sphereShape,
+    material: plasticMaterial
+  });
+  sphereBody.position.copy(position as unknown as Vec3);
+  world.addBody(sphereBody);
+
+  updateObjectArray.push({
+    mesh: sphereMesh,
+    object: sphereBody
+  });
+};
+
+generateSphere(0.5, { x: 0, y: 6, z: 0 });
+
 let oldElapsedTime = 0;
 const clock = new Clock();
 let rafId: number;
@@ -173,9 +187,10 @@ function gameLoop() {
   /**
    * Update sphere position
    */
-  sphere.position.setX(sphereBody.position.x);
-  sphere.position.setY(sphereBody.position.y);
-  sphere.position.setZ(sphereBody.position.z);
+  for (const item of updateObjectArray) {
+    const { mesh, object } = item;
+    mesh.position.copy(object.position as unknown as Vector3);
+  }
 
   rafId = requestAnimationFrame(gameLoop);
 }
