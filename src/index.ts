@@ -8,7 +8,9 @@ import {
   AmbientLight,
   PlaneBufferGeometry,
   MeshStandardMaterial,
-  Vector3
+  Vector3,
+  AnimationMixer,
+  Clock
 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
@@ -28,12 +30,20 @@ dracoLoader.setDecoderPath('/draco/'); // Path to the WASM draco folder containe
 const loader = new GLTFLoader();
 loader.setDRACOLoader(dracoLoader);
 
+// Animation Mixer used to play animations
+let mixer = null;
+
 loader.load(
-  '/models/Duck/glTF-Draco/Duck.gltf',
+  '/models/Fox/glTF/Fox.gltf',
   (glTF) => {
     console.log('glTF loading finished');
 
-    // scene.add(glTF.scene) // this will load the entire scene into our scene, including things that we don't need
+    glTF.scene.scale.set(0.025, 0.025, 0.025);
+    scene.add(glTF.scene) // this will load the entire scene into our scene, including things that we don't need
+
+    mixer = new AnimationMixer(glTF.scene);
+    const action = mixer.clipAction(glTF.animations[0]);
+    action.play();
 
     // scene.add(glTF.scene.children[0]); // this will only load the first child
     
@@ -42,9 +52,9 @@ loader.load(
       // scene.add(object);
     // })
 
-    while(glTF.scene.children.length > 0){
-      scene.add(glTF.scene.children[0]);
-    }
+    // while(glTF.scene.children.length > 0){
+    //   scene.add(glTF.scene.children[0]);
+    // }
   },
   () => {
     console.log('glTF loading in progress');
@@ -138,13 +148,20 @@ ambientLightFolder.add(ambientLight, 'intensity').max(1).min(0).step(0.01);
 // .max(2 * Math.PI)
 // .step(0.001);
 
-let currentTimestamp = performance.now();
+const clock = new Clock();
+let lastTimestamp = clock.getElapsedTime();
 let rafId: number;
 
-function gameLoop(timestamp) {
+function gameLoop() {
+  const currentTimestamp = clock.getElapsedTime();
+  const deltaTime = currentTimestamp - lastTimestamp;
+  lastTimestamp = currentTimestamp;
+
+  if(mixer) mixer.update(deltaTime);
+
   control.update();
   renderer.render(scene, camera);
   rafId = requestAnimationFrame(gameLoop);
 }
 
-rafId = requestAnimationFrame(gameLoop);
+gameLoop();
