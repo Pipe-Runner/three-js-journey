@@ -12,6 +12,7 @@ import {
 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
 import { GUI } from 'dat.gui';
 import gsap from 'gsap';
 import './main.css';
@@ -20,12 +21,19 @@ const gui = new GUI();
 
 const scene = new Scene();
 
+const dracoLoader = new DRACOLoader();
+dracoLoader.setDecoderPath('/draco/'); // Path to the WASM draco folder container the WASM code 
+// The trailing slash in the path in important
+
 const loader = new GLTFLoader();
+loader.setDRACOLoader(dracoLoader);
 
 loader.load(
-  '/models/FlightHelmet/glTF/FlightHelmet.gltf',
+  '/models/Duck/glTF-Draco/Duck.gltf',
   (glTF) => {
     console.log('glTF loading finished');
+
+    // scene.add(glTF.scene) // this will load the entire scene into our scene, including things that we don't need
 
     // scene.add(glTF.scene.children[0]); // this will only load the first child
     
